@@ -29,7 +29,7 @@ my %args = (
         'strict'             =>  0,
         'warnings'           =>  0,
     },
-    MIN_PERL_VERSION     =>   5.006,
+    MIN_PERL_VERSION     =>   5.010,
     AUTHOR               =>  "$ME <$LOCAL_ADDR\@$DOMAIN>",
     LICENSE              =>  'mit',
     META_MERGE           => {
