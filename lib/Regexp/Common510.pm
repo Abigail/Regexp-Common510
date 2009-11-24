@@ -5,11 +5,15 @@ use strict;
 use warnings;
 no  warnings 'syntax';
 
+use Scalar::Util 'reftype';
+
 our $VERSION = '2009112401';
 
-sub  pattern {1;};
 sub  RE      {1;};
 our %RE;
+
+my  $SEP       = "__";
+my  %CACHE;
 
 sub import {
     my $caller = caller;
@@ -45,7 +49,140 @@ sub import {
         die "Unknown import parameters: @keys\n";
     }
 }
+
+
+#
+# Map names to keys.
+#
+sub name2key {
+    my $name = shift;
     
+    given (reftype $name) {
+        when (undef)   {return $name}
+        when ("ARRAY") {return join $SEP => @$name}
+    }
+    return;
+}
+
+
+#
+# Return the 'type' of pattern (string, regexp, coderef, otherwise).
+#
+sub pattern_type ($) {  
+    my $pattern = shift;
+    
+    given (reftype $pattern) {
+        when (undef)    {return "STRING"}
+        when ("SCALAR") {
+            return ref ($pattern) eq 'Regexp' ? "REGEXP" : "SCALAR"
+        }
+        default {
+            return "${_}REF";
+        }
+    }
+}
+
+
+#
+# Return true if it's a pattern we can deal with.
+#
+sub check_pattern_type {
+    my $pattern = shift;
+    
+    my $type = pattern_type $pattern;
+        
+    return $type eq "STRING" ||
+           $type eq "REGEXP" ||
+           $type eq "CODEREF";
+}                     
+
+
+
+
+    
+
+#
+# pattern is the routine that registers a (set of) patterns.
+# 
+# It takes the following arguments:
+#    - name:         name of the pattern (required)
+#    - pattern:      pattern or sub returning a pattern (required)
+#    - keep_pattern: pattern or sub returning a pattern (optional)
+#    - version:      minimal perl version
+#    - config:       configuration
+#
+
+sub pattern {
+    if (!@_ || @_ % 2) {
+        die "pattern takes a non-empty hash as argument";
+    }
+
+    my %arg = @_;
+
+    foreach my $arg (qw [name pattern]) {
+        next if exists $arg {$arg};
+        die "Argument '$arg' to 'pattern' is required";
+    }
+
+    my $pattern      = delete $arg {pattern};
+    my $name         = delete $arg {name};
+    my $version      = delete $arg {version} // 0;
+    my $keep_pattern = delete $arg {keep_pattern};
+    my $config       = delete $arg {config};
+
+    #
+    # Sanity checks.
+    #
+    my $key = name2key $name;
+    die "Illegal argument 'name' given to 'pattern'\n"
+         unless defined $key;
+
+    die "Illegal argument 'pattern' given to 'pattern'\n"
+         unless check_pattern_type $pattern;
+
+    #
+    # If a version is given, compare it with the current version of Perl.
+    # Return if Perl is too old.
+    #
+    return if $version =~ /^[0-9]+(?:\.[0-9]+)$/ &&
+              $version >  $];
+
+
+    my $hold;   # Hashref which will be stored in registry.
+
+    $$hold {pattern} = $pattern;
+
+
+    #
+    # Parse optional arguments.
+    #
+    if (defined $keep_pattern) {
+        die "Illegal argument 'pattern' given to 'pattern'\n"
+             unless check_pattern_type $pattern;
+
+        $$hold {keep_pattern} = $keep_pattern;
+    }
+
+    if ($config) {
+        unless (reftype ($config) && reftype ($config) eq "HASH") {
+            die "Illegal parameters 'config' to 'pattern'\n";
+        }
+
+        unless (                 pattern_type (     $pattern) eq 'CODEREF' ||
+                $keep_pattern && pattern_type ($keep_pattern) eq 'CODEREF') {
+            warnings::warnif ("Useless parameter 'config' to 'pattern'\n");
+        }
+        else {
+            $$hold {config} = {%$config};
+        }
+    }
+
+    $CACHE {$key} = $hold;
+}
+
+
+
+
 
 1;
 
