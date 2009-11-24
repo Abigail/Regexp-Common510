@@ -4,6 +4,9 @@ MANIFEST
 t/000_basic.t
 t/010_import.t
 t/011_import.t
+t/012_import.t
+t/013_import.t
+t/019_import.t
 t/950_pod.t
 t/960_pod_coverage.t
 t/990_kwalitee.t

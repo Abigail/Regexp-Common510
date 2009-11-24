@@ -36,7 +36,7 @@ sub import {
         when ("pattern") {*{"${caller}::pattern"} = \&{"${pkg}::pattern"}}
         when ("RE")      {*{"${caller}::RE"}      = \&{"${pkg}::RE"}}
         when ("%RE")     {*{"${caller}::RE"}      = \%{"${pkg}::RE"}}
-        default          {die "Unknown API point $_\n"}
+        default          {die "Unknown API point: $_\n"}
     }
 
     if (%args) {
