@@ -1,12 +1,51 @@
 package Regexp::Common510;
 
-use 5.006;
+use 5.010;
 use strict;
 use warnings;
 no  warnings 'syntax';
 
 our $VERSION = '2009112401';
 
+sub  pattern {1;};
+sub  RE      {1;};
+our %RE;
+
+sub import {
+    my $caller = caller;
+    my $pkg    = shift;
+
+    my %args   = @_;
+
+    if (exists $args {'-modules'}) {
+        my $modules = delete $args {'-modules'};
+        foreach my $module (@$modules) {
+            my $package = __PACKAGE__ . "::$module";
+            eval "require $package; 1" or do {
+                my $error = $@ // "Unknown error";
+                die "Importing $package failed: $error\n";
+            };
+        }
+    }
+
+    my $api = exists $args {'-api'} ? delete $args {'-api'}
+                                    : [qw [%RE RE pattern]];
+
+    foreach (@$api) {
+        no strict 'refs';
+        when ("pattern") {*{"${caller}::pattern"} = \&{"${pkg}::pattern"}}
+        when ("RE")      {*{"${caller}::RE"}      = \&{"${pkg}::RE"}}
+        when ("%RE")     {*{"${caller}::RE"}      = \%{"${pkg}::RE"}}
+        default          {die "Unknown API point $_\n"}
+    }
+
+    if (%args) {
+        my @keys = keys %args;
+        local $" = ", ";
+        die "Unknown import parameters: @keys\n";
+    }
+}
+    
 
 1;
 

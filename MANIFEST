@@ -2,6 +2,7 @@ lib/Regexp/Common510.pm
 Makefile.PL
 MANIFEST
 t/000_basic.t
+t/010_import.t
 t/950_pod.t
 t/960_pod_coverage.t
 t/990_kwalitee.t
