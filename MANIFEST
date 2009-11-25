@@ -1,7 +1,11 @@
-lib/Regexp/Common510.pm
 Makefile.PL
 MANIFEST
+Changes
+README
+lib/Regexp/Common510.pm
 t/000_basic.t
+t/010_collect_args/010_scalars.t
+t/010_collect_args/020_array.t
 t/050_import/010_import.t
 t/050_import/020_import.t
 t/050_import/030_import.t
@@ -10,5 +14,3 @@ t/050_import/090_import.t
 t/950_pod.t
 t/960_pod_coverage.t
 t/990_kwalitee.t
-Changes
-README
