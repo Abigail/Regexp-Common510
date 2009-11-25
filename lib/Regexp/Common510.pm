@@ -7,7 +7,10 @@ no  warnings 'syntax';
 
 use Scalar::Util 'reftype';
 
-our $VERSION = '2009112401';
+our $VERSION     = '2009112401';
+
+my  $DEFAULT_API = [qw [RE]];
+my  %ALL_API     = map {$_ => 1} qw [RE %RE pattern];
 
 sub  RE      {1;};
 our %RE;
@@ -15,11 +18,43 @@ our %RE;
 my  $SEP       = "__";
 my  %CACHE;
 
+
+sub collect_args {
+    my %args = @_;
+    my %out;
+
+    my $key  = $args {default};
+
+    my $saw_arg = 0;
+    foreach my $param (@{$args {args}}) {
+        if ($param =~ /^-/) {
+            $key = $param;
+            $saw_arg = 0;
+            next;
+        }
+        if ($args {array} && $args {array} {$key}) {
+            push @{$out {$key}} => $param;
+            next;
+        }
+        else {
+            if ($saw_arg) {
+                die "Cannot have more than one parameter for '$param'";
+            }
+            $out {$key} = $param;
+        }
+    }
+
+    wantarray ? %out : \%out;
+}
+
+
+
 sub import {
     my $caller = caller;
     my $pkg    = shift;
 
-    my %args   = @_;
+    my %args   = collect_args default => "-modules",
+                              args    => \@_;
 
     if (exists $args {'-modules'}) {
         my $modules = delete $args {'-modules'};
@@ -33,7 +68,7 @@ sub import {
     }
 
     my $api = exists $args {'-api'} ? delete $args {'-api'}
-                                    : [qw [%RE RE pattern]];
+                                    : $DEFAULT_API;
 
     foreach (@$api) {
         no strict 'refs';
