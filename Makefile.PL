@@ -20,6 +20,7 @@ my  $REPO_HOST    =  'github.com';
 my  $ME           =  'Abigail';
 my  $REPOSITORY   =  "git://$REPO_HOST/$ME/$REPO.git";
 
+my  @tests        =   qw [t/*.t t/*/*.t];
 
 my %args = (
     NAME                 =>  $PACKAGE,
@@ -43,6 +44,10 @@ my %args = (
             repository   => $REPOSITORY,
         },
         keywords         => [qw [ ]],
+    },
+    test                 => {
+        TESTS                => $^O eq 'MSWin32'
+                                ? "@{[map {glob} @tests]}" : "@tests"
     },
 );
 
