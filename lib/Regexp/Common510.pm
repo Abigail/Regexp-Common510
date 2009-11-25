@@ -26,17 +26,23 @@ sub collect_args {
     my $key   = $args {default};
     my %array = $args {array} && ref $args {array} eq 'ARRAY'
                                ? map {$_ => 1} @{$args {array}}
-                               : {};
+                               : ();
 
     my $saw_arg = 0;
     foreach my $param (@{$args {args}}) {
         if ($param =~ /^-/) {
             $key = $param;
             $saw_arg = 0;
+            #
+            # Set a default.
+            #
+            $out {$key} = $array {$key} ? [] : 1;
             next;
         }
+        if (!defined $key) {
+            die "Cannot collect without a default key\n";
+        }
         if ($array {$key}) {
-            $out {$key} = [] unless $saw_arg ++;
             push @{$out {$key}} => ref $param eq 'ARRAY' ? @$param : $param;
             next;
         }

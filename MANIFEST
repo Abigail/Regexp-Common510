@@ -6,6 +6,7 @@ lib/Regexp/Common510.pm
 t/000_basic.t
 t/010_collect_args/010_scalars.t
 t/010_collect_args/020_array.t
+t/010_collect_args/030_default.t
 t/050_import/010_import.t
 t/050_import/020_import.t
 t/050_import/030_import.t
