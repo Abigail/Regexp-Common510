@@ -12,12 +12,12 @@ our $r = eval "require Test::NoWarnings; 1";
 
 use Regexp::Common510;
 
-ok defined &pattern, "&pattern is set";
-ok defined &RE,      "&RE is set";
+ok !defined &pattern, "&pattern is not set";
+ok  defined &RE,      "&RE is set";
 
 $Regexp::Common510::RE {foo} = "bar";
 
-is $RE {foo}, "bar", "%Regexp::Common510::RE was exported";
+ok !defined $::RE {foo}, "%Regexp::Common510::RE was not exported";
 
 Test::NoWarnings::had_no_warnings () if $r;
 

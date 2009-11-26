@@ -64,6 +64,7 @@ sub import {
     my $pkg    = shift;
 
     my %args   = collect_args default => "-modules",
+                              array   => ["-api", "-modules"],
                               args    => \@_;
 
     if (exists $args {'-modules'}) {
