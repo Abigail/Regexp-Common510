@@ -15,6 +15,8 @@ t/050_import/030_api_array.t
 t/050_import/031_api_array.t
 t/050_import/032_api_array.t
 t/050_import/040_multiple_api.t
+t/050_import/041_multiple_api.t
+t/050_import/045_duplicate_api.t
 t/050_import/090_api_sanity.t
 t/950_pod.t
 t/960_pod_coverage.t
