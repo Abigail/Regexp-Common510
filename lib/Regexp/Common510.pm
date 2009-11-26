@@ -224,6 +224,8 @@ sub pattern {
     }
 
     $CACHE {$key} = $hold;
+
+    return;  # Prevents $hold from being the default return value.
 }
 
 
