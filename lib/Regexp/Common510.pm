@@ -240,7 +240,44 @@ Regexp::Common510 - Abstract
 
 =head1 SYNOPSIS
 
+ use Regexp::Common510 qw {number URI}, -api => 'pattern', 'RE';
+
 =head1 DESCRIPTION
+
+=head2 Export
+
+By default, C<< Regexp::Common510 >> exports a single subroutine; either
+C<< pattern >>, or C<< RE >>. 
+
+If C<< Regexp::Common510 >> is used without a list of modules, it's assumed
+the using package is a package that registers new patterns. In such a case,
+the subroutine C<< pattern >> is exported. Otherwise (that is, a list
+of modules is used when C<< use >>ing C<< Regexp::Common510 >>), it's assumed
+the using package is package that wants to query for patterns. Then C<< RE >>
+is exported.
+
+In either case, the default can be overruled by using C<< -api LIST >> 
+in the usage list, where C<< LIST >> is a (possibly empty) list of things
+to import. C<< LIST >> is either a list of strings, or an anonymous array
+of strings. The following subroutines and variables can be imported:
+
+=over 4
+
+=item C<< pattern >>
+
+Register new patterns.
+
+=item C<< RE >>
+
+Query patterns.
+
+=item C<< %RE >>
+
+Old interface. (Possible. May never happen.)
+
+=back
+
+For a detailed description of the items above, see below.
 
 =head1 BUGS
 
