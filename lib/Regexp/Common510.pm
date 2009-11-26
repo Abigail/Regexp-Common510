@@ -9,9 +9,6 @@ use Scalar::Util 'reftype';
 
 our $VERSION     = '2009112401';
 
-my  $DEFAULT_API = [qw [RE]];
-my  %ALL_API     = map {$_ => 1} qw [RE %RE pattern];
-
 sub  RE      {1;};
 our %RE;
 
@@ -67,6 +64,12 @@ sub import {
                               array   => ["-api", "-modules"],
                               args    => \@_;
 
+    my $api = exists $args {'-api'}
+            ? delete $args {'-api'}
+            : exists $args {'-modules'} && @{$args {'-modules'}} ? ['RE']
+                                                                 : ['pattern'];
+
+
     if (exists $args {'-modules'}) {
         my $modules = delete $args {'-modules'};
         foreach my $module (@$modules) {
@@ -77,9 +80,6 @@ sub import {
             };
         }
     }
-
-    my $api = exists $args {'-api'} ? delete $args {'-api'}
-                                    : $DEFAULT_API;
 
     foreach (@$api) {
         no strict 'refs';
