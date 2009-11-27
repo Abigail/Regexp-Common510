@@ -9,7 +9,6 @@ use Scalar::Util 'reftype';
 
 our $VERSION     = '2009112401';
 
-sub  RE      {1;};
 our %RE;
 
 my  $SEP       = "__";
@@ -157,24 +156,29 @@ sub check_pattern_type {
 #    - version:      minimal perl version
 #    - config:       configuration
 #
+# Returns the canonical name ($key).
+#
 
 sub pattern {
-    if (!@_ || @_ % 2) {
-        die "pattern takes a non-empty hash as argument";
-    }
+    die "pattern needs arguments" unless @_;
 
-    my %arg = @_;
+    #
+    # Collect the arguments
+    #
+    my %arg = collect_args default => "-name",
+                           array   => ["-name"],
+                           args    => \@_;
 
-    foreach my $arg (qw [name pattern]) {
+    foreach my $arg (qw [-name -pattern]) {
         next if exists $arg {$arg};
         die "Argument '$arg' to 'pattern' is required";
     }
 
-    my $pattern      = delete $arg {pattern};
-    my $name         = delete $arg {name};
-    my $version      = delete $arg {version} // 0;
-    my $keep_pattern = delete $arg {keep_pattern};
-    my $config       = delete $arg {config};
+    my $pattern      = delete $arg {-pattern};
+    my $name         = delete $arg {-name};
+    my $version      = delete $arg {-version} // 0;
+    my $keep_pattern = delete $arg {-keep_pattern};
+    my $config       = delete $arg {-config};
 
     #
     # Sanity checks.
@@ -225,10 +229,45 @@ sub pattern {
 
     $CACHE {$key} = $hold;
 
-    return;  # Prevents $hold from being the default return value.
+    return $key;
 }
 
 
+#
+# Retrieve a pattern
+#
+sub RE {
+    die "RE needs arguments" unless @_;
+
+    #
+    # Collect the arguments.
+    #
+    my %arg  = collect_args default => "-Name",
+                            array   => ["-Name"],
+                            args    => \@_;
+
+    #
+    # Grab the global parameters.
+    #
+    my $Name = delete $arg {-Name} or die "RE needs a name";
+    my $Keep = delete $arg {-Keep};
+
+    my $key  = name2key $Name or die "Illegal name for RE";
+
+    #
+    # Die if it isn't there.
+    #
+    my $hold = $CACHE {$key} or die "No pattern with that name";
+
+    die "-Keep not implemented yet" if $Keep;
+
+    #
+    # For now, just do simple, scalar patterns.
+    #
+    my $pattern = $$hold {pattern};
+
+    $pattern;
+}
 
 
 
