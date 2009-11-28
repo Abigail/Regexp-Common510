@@ -21,6 +21,7 @@ t/050_import/041_multiple_api.t
 t/050_import/045_duplicate_api.t
 t/050_import/090_api_sanity.t
 t/100_is_valid_name/100_valid.t
+t/300_pattern/010_basic.t
 t/300_pattern/500_pattern_error.t
 t/950_pod.t
 t/960_pod_coverage.t
