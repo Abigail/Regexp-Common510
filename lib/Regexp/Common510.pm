@@ -95,18 +95,28 @@ sub import {
     }
 }
 
+#
+# Check if a string is a valid capture name.
+#
+sub is_valid_name {
+    my $_ = shift;
+    /^[_\p{L}][_\p{L}\p{Nd}]*$/;   # Digits or any numbers?
+}
 
 #
 # Map names to keys.
 #
+# Names should be valid capture names.
+#
 sub name2key {
     my $name = shift;
+    my $key  = "";
     
     given (reftype $name) {
-        when (undef)   {return $name}
-        when ("ARRAY") {return join $SEP => @$name}
+        when (undef)   {$key = $name}
+        when ("ARRAY") {$key =  join $SEP => @$name}
     }
-    return;
+    return $key if is_valid_name $key;
 }
 
 
