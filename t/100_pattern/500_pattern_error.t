@@ -30,6 +30,7 @@ throws_ok {pattern -pattern => "foo"}
           "pattern needs the -name argument";
 
 
+
 Test::NoWarnings::had_no_warnings () if $r;
 
 done_testing;

@@ -20,7 +20,7 @@ t/050_import/040_multiple_api.t
 t/050_import/041_multiple_api.t
 t/050_import/045_duplicate_api.t
 t/050_import/090_api_sanity.t
-t/100_pattern/500_name_error.t
+t/100_pattern/500_pattern_error.t
 t/950_pod.t
 t/960_pod_coverage.t
 t/990_kwalitee.t
