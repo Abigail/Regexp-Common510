@@ -242,6 +242,11 @@ sub pattern {
     return $key;
 }
 
+sub parse_keep {
+    my %args = @_;
+
+    $args {pattern}
+}
 
 #
 # Retrieve a pattern
@@ -272,10 +277,48 @@ sub RE {
 
     die "-Keep not implemented yet" if $Keep;
 
+    my $pattern;
+    my $need_parse;    # If true, extract (?k: ) constructs.
+    my $save_parse;    # If true, we can cache the results.
+
     #
-    # For now, just do simple, scalar patterns.
+    # Have we once parsed?
     #
-    my $pattern = $$hold {pattern};
+    if (!$Keep && exists $$hold {pattern_parsed}) {
+        return $$hold {pattern_parsed};
+    }
+    if ( $Keep && exists $$hold {keep_pattern_parsed}) {
+        return $$hold {keep_pattern_parsed};
+    }
+
+    #
+    # Do we need to parse (?k:) constructs?
+    #
+    if ($Keep && exists $$hold {keep_pattern}) {
+        $pattern = $$hold {keep_pattern};
+    }
+    else {
+        $pattern    = $$hold {pattern};
+        if (  !exists $$hold {keep_pattern}
+            && pattern_type $pattern eq "STRING") {
+            $need_parse = 1;
+            $save_parse = 1;
+        }
+    }
+
+    if ($need_parse) {
+        my $parsed_pattern = parse_keep  pattern => $pattern,
+                                         keep    => $Keep;
+
+        if ($save_parse) {
+            my $parsed_pattern2 = parse_keep  pattern =>  $pattern,
+                                              keep    => !$Keep;
+            $$hold {pattern_parsed}      = 
+                    $Keep ? $parsed_pattern2 : $parsed_pattern;
+            $$hold {keep_pattern_parsed} =
+                    $Keep ? $parsed_pattern  : $parsed_pattern2;
+        }
+    }
 
     $pattern;
 }
