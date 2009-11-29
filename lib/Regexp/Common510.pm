@@ -259,10 +259,11 @@ sub RE {
     #
     # Grab the global parameters.
     #
-    my $Name = delete $arg {-Name} or die "RE needs a name";
+    my $Name = delete $arg {-Name}
+               or die "Argument '-Name' to 'RE' is required";
     my $Keep = delete $arg {-Keep};
 
-    my $key  = name2key $Name or die "Illegal name for RE";
+    my $key  = name2key $Name or die "Illegal -Name argument to 'RE'";
 
     #
     # Die if it isn't there.
