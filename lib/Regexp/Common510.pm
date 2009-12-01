@@ -242,10 +242,20 @@ sub pattern {
     return $key;
 }
 
+#
+# Parses out (?k:) and (?k<name>:) constructs.
+#
 sub parse_keep {
-    my %args = @_;
+    my %args    = @_;
+    my $pattern = $args {pattern};
+    my $keep    = $args {keep};
 
-    $args {pattern}
+    $pattern    =~ s{\(\?k (?: <([^>]+)> )? :}
+                    {$keep ? defined $1 ? "(?<$1>"
+                                        : "("
+                           : "(?:"}xeg;
+
+    $pattern;
 }
 
 #
