@@ -285,8 +285,6 @@ sub RE {
     #
     my $hold = $CACHE {$key} or die "No pattern with that name";
 
-    die "-Keep not implemented yet" if $Keep;
-
     my $pattern;
     my $need_parse;    # If true, extract (?k: ) constructs.
     my $save_parse;    # If true, we can cache the results.
@@ -328,6 +326,8 @@ sub RE {
             $$hold {keep_pattern_parsed} =
                     $Keep ? $parsed_pattern  : $parsed_pattern2;
         }
+
+        $pattern = $parsed_pattern;
     }
 
     $pattern;
