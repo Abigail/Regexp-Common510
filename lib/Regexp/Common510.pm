@@ -82,10 +82,11 @@ sub import {
 
     foreach (@$api) {
         no strict 'refs';
-        when ("pattern") {*{"${caller}::pattern"} = \&{"${pkg}::pattern"}}
-        when ("RE")      {*{"${caller}::RE"}      = \&{"${pkg}::RE"}}
-        when ("%RE")     {*{"${caller}::RE"}      = \%{"${pkg}::RE"}}
-        default          {die "Unknown API point: $_\n"}
+        when ("pattern")  {*{"${caller}::pattern"}  = \&{"${pkg}::pattern"}}
+        when ("RE")       {*{"${caller}::RE"}       = \&{"${pkg}::RE"}}
+        when ("%RE")      {*{"${caller}::RE"}       = \%{"${pkg}::RE"}}
+        when ("name2key") {*{"${caller}::name2key"} = \&{"${pkg}::name2key"}}
+        default           {die "Unknown API point: $_\n"}
     }
 
     if (%args) {

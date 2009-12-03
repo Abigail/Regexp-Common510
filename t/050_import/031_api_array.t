@@ -12,8 +12,9 @@ our $r = eval "require Test::NoWarnings; 1";
 
 use Regexp::Common510 -api => 'RE';
 
-ok !defined &pattern, "&pattern is not set";
-ok  defined &RE,      "&RE is set";
+ok !defined &pattern,  "&pattern is not set";
+ok  defined &RE,       "&RE is set";
+ok !defined &name2key, "&name2key is not set";
 
 $Regexp::Common510::RE {foo} = "bar";
 

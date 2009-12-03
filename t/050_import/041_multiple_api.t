@@ -10,10 +10,11 @@ use Test::More 0.88;
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => 'pattern', '%RE';
+use Regexp::Common510 -api => 'pattern', '%RE', 'name2key';
 
-ok  defined &pattern, "&pattern is set";
-ok !defined &RE,      "&RE is not set";
+ok  defined &pattern,  "&pattern is set";
+ok !defined &RE,       "&RE is not set";
+ok  defined &name2key, "&name2key is set";
 
 $Regexp::Common510::RE {foo} = "bar";
 
