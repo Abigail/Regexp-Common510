@@ -116,7 +116,7 @@ sub name2key {
         when (undef)   {$key = $name}
         when ("ARRAY") {$key =  join $SEP => @$name}
     }
-    $key =~ s/[^_\p{L}]+/_/g;
+    $key =~ s/[^_\p{L}\p{N}]+/_/g;
     return $key if is_valid_name $key;
 }
 
