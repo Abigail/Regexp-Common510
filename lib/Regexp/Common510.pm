@@ -82,10 +82,13 @@ sub import {
 
     foreach (@$api) {
         no strict 'refs';
-        when ("pattern")  {*{"${caller}::pattern"}  = \&{"${pkg}::pattern"}}
-        when ("RE")       {*{"${caller}::RE"}       = \&{"${pkg}::RE"}}
-        when ("%RE")      {*{"${caller}::RE"}       = \%{"${pkg}::RE"}}
-        when ("name2key") {*{"${caller}::name2key"} = \&{"${pkg}::name2key"}}
+        when ("%RE")         {*{"${caller}::RE"}       = \%{"${pkg}::RE"}}
+        when ("pattern")     {*{"${caller}::pattern"}  = \&{"${pkg}::pattern"}}
+        when ("RE")          {*{"${caller}::RE"}       = \&{"${pkg}::RE"}}
+        when ("name2key")    {*{"${caller}::name2key"} = \&{"${pkg}::name2key"}}
+        when ("unique_name") {
+            *{"${caller}::unique_name"} = \&{"${pkg}::unique_name"}
+        }
         default           {die "Unknown API point: $_\n"}
     }
 
@@ -94,6 +97,15 @@ sub import {
         local $" = ", ";
         die "Unknown import parameters: @keys\n";
     }
+}
+
+#
+# Return a unique, valid, name to be used as capture.
+# All names will start with __RC__
+#
+sub unique_name () {
+    state $tag = "aaaaa";
+    "__RC__" . $tag ++;
 }
 
 #
@@ -117,7 +129,8 @@ sub name2key {
         when (undef)   {$key = $name}
         when ("ARRAY") {$key =  join $SEP => @$name}
     }
-    $key =~ s/[^_\p{L}\p{N}]+/_/g;
+    $key =~ s/[^_\p{L}\p{N}]/_/g;
+    $key = "_$key" if $key =~ /^[^_\p{L}]/;
     return $key if is_valid_name $key;
 }
 
