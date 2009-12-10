@@ -127,11 +127,9 @@ sub name2key {
     
     given (reftype $name) {
         when (undef)   {$key = $name}
-        when ("ARRAY") {$key =  join $SEP => @$name}
+        when ("ARRAY") {$key =  join $SEP => grep {!reftype ($_)} @$name}
     }
-    $key =~ s/[^_\p{L}\p{N}]/_/g;
-    $key = "_$key" if $key =~ /^[^_\p{L}]/;
-    return $key if is_valid_name $key;
+    return $key;
 }
 
 
@@ -302,17 +300,6 @@ sub RE {
 
     my $pattern;
     my $need_parse;    # If true, extract (?k: ) constructs.
-    my $save_parse;    # If true, we can cache the results.
-
-    #
-    # Have we once parsed?
-    #
-    if (!$Keep && exists $$hold {pattern_parsed}) {
-        return $$hold {pattern_parsed};
-    }
-    if ( $Keep && exists $$hold {keep_pattern_parsed}) {
-        return $$hold {keep_pattern_parsed};
-    }
 
     #
     # Do we need to parse (?k:) constructs?
@@ -325,22 +312,12 @@ sub RE {
         if (  !exists $$hold {keep_pattern}
             && pattern_type $pattern eq "STRING") {
             $need_parse = 1;
-            $save_parse = 1;
         }
     }
 
     if ($need_parse) {
         my $parsed_pattern = parse_keep  pattern => $pattern,
                                          keep    => $Keep;
-
-        if ($save_parse) {
-            my $parsed_pattern2 = parse_keep  pattern =>  $pattern,
-                                              keep    => !$Keep;
-            $$hold {pattern_parsed}      = 
-                    $Keep ? $parsed_pattern2 : $parsed_pattern;
-            $$hold {keep_pattern_parsed} =
-                    $Keep ? $parsed_pattern  : $parsed_pattern2;
-        }
 
         $pattern = $parsed_pattern;
     }

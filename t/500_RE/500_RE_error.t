@@ -25,7 +25,7 @@ throws_ok {RE -Keep => 1}
           qr /Argument '-Name' to 'RE' is required/ =>
           "RE needs the -Name argument";
 
-throws_ok {RE -Name => "123"} 
+throws_ok {RE -Name => {foo => 123}} 
           qr /Illegal -Name argument to 'RE'/ =>
           "RE needs a valid name";
 
