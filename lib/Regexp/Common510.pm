@@ -316,9 +316,9 @@ sub RE {
     }
 
     if (pattern_type $pattern eq "CODEREF") {
-        my $config = $$hold {config} || {};
-        $$config {$_} = delete $arg {$_} foreach grep {/^-\p{Ll}/} keys %arg;
-        $pattern = $pattern -> (%$config);
+        my %config   = %{$$hold {config} || {}};
+        $config {$_} = delete $arg {$_} foreach grep {/^-\p{Ll}/} keys %arg;
+        $pattern = $pattern -> (%config);
         if (  !exists $$hold {keep_pattern}
             && pattern_type $pattern eq "STRING") {
             $need_parse = 1;
