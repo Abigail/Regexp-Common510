@@ -280,7 +280,7 @@ sub RE {
     #
     # Collect the arguments.
     #
-    my %arg  = collect_args default => "-Name",
+    my %arg  = collect_args default =>  "-Name",
                             array   => ["-Name"],
                             args    => \@_;
 
@@ -309,6 +309,16 @@ sub RE {
     }
     else {
         $pattern    = $$hold {pattern};
+        if (  !exists $$hold {keep_pattern}
+            && pattern_type $pattern eq "STRING") {
+            $need_parse = 1;
+        }
+    }
+
+    if (pattern_type $pattern eq "CODEREF") {
+        my $config = $$hold {config} || {};
+        $$config {$_} = delete $arg {$_} foreach grep {/^-\p{Ll}/} keys %arg;
+        $pattern = $pattern -> (%$config);
         if (  !exists $$hold {keep_pattern}
             && pattern_type $pattern eq "STRING") {
             $need_parse = 1;
