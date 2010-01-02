@@ -18,22 +18,20 @@ our $r = eval "require Test::NoWarnings; 1";
 use Regexp::Common510 -api => ['RE'];
 
 throws_ok {RE}
-          qr /RE needs arguments/,
-          "RE needs arguments";
+          qr /RE needs at least 2 arguments/,
+          "RE needs at least 2 arguments";
 
-throws_ok {RE -Keep => 1} 
-          qr /Argument '-Name' to 'RE' is required/ =>
-          "RE needs the -Name argument";
+throws_ok {RE "Test"}
+          qr /RE needs at least 2 arguments/,
+          "RE needs at least 2 arguments";
 
-throws_ok {RE -Name => {foo => 123}} 
-          qr /Illegal -Name argument to 'RE'/ =>
-          "RE needs a valid name";
+throws_ok {RE "123Test" => "foo"}
+          qr /Category is not valid/,
+          "Category is not valid";
 
-throws_ok {RE -Name => "foo"}
-          qr /No pattern with that name/ =>
-          "RE needs an existing name";
-
-
+throws_ok {RE "Test" => "::foo"}
+          qr /Name is not valid/,
+          "Name is not valid";
 
 Test::NoWarnings::had_no_warnings () if $r;
 
