@@ -12,25 +12,23 @@ our $r = eval "require Test::NoWarnings; 1";
 
 use Regexp::Common510 -api => "RE", "pattern";
 
-pattern foo =>          -pattern => "123";
-pattern qw [foo bar] => -pattern => "456";
+pattern Test => foo => -pattern => "123";
+pattern Test => bar => -pattern => "456";
 
 my @tests = (
-   [["foo"]         =>  "123"],
-   [["foo", "bar"]  =>  "456"],
+   [qw [Test  foo 123]],
+   [qw [Test  bar 456]],
+   [qw [Test2 baz 789]],
+   [qw [Test  foo 000]],
 );
 
 foreach my $test (@tests) {
-    my ($name, $pattern) = @$test;
-    my $Pat1 = RE          @$name;
-    my $Pat2 = RE           $name;
-    my $Pat3 = RE -Name => @$name;
-    my $Pat4 = RE -Name =>  $name;
+    my ($category, $name, $pattern) = @$test;
+    pattern $category => $name, -pattern => $pattern;
 
-    is $Pat1, $pattern, "Retrieve (list)";
-    is $Pat2, $pattern, "Retrieve (arrayref)";
-    is $Pat3, $pattern, "Retrieve (named/list)";
-    is $Pat4, $pattern, "Retrieve (named/arrayref)";
+    my $Pat = RE $category, $name;
+
+    is $Pat, $pattern, "Retrieved ($category/$name)";
 }
 
 
