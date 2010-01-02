@@ -100,6 +100,19 @@ sub import {
 }
 
 #
+# Load a category of patterns.
+#
+sub load_category {
+    my $category = shift;
+
+    my $package = __PACKAGE__ . "::$category";
+    eval "require $package; 1" or do {
+        my $error = $@ // "Unknown error";
+        die "Importing $category failed: $error\n";
+    };
+}
+
+#
 # Return a unique, valid, name to be used as capture.
 # All names will start with __RC__
 #
@@ -172,33 +185,39 @@ sub check_pattern_type {
 #
 # pattern is the routine that registers a (set of) patterns.
 # 
+# pattern category, name, [arguments];
+
 # It takes the following arguments:
-#    - name:         name of the pattern (required)
-#    - pattern:      pattern or sub returning a pattern (required)
-#    - keep_pattern: pattern or sub returning a pattern (optional)
-#    - version:      minimal perl version
-#    - config:       configuration
+#    + category:      category of pattern
+#    + name:          name of the pattern
+#    + -pattern:      pattern or sub returning a pattern (required)
+#    + -keep_pattern: pattern or sub returning a pattern (optional)
+#    + -version:      minimal perl version
+#    + -config:       configuration
 #
 # Returns the canonical name ($key).
 #
 
 sub pattern {
-    die "pattern needs arguments" unless @_;
+    die "pattern needs at least 2 arguments" unless @_ >= 2;
+
+    my $category = shift;
+    my $name     = shift;
+
+    die "Category is not valid" unless is_valid_name $category;
+    die "Name is not valid"     unless is_valid_name $name;
 
     #
     # Collect the arguments
     #
-    my %arg = collect_args default => "-name",
-                           array   => ["-name"],
-                           args    => \@_;
+    my %arg = collect_args args => \@_;
 
-    foreach my $arg (qw [-name -pattern]) {
+    foreach my $arg (qw [-pattern]) {
         next if exists $arg {$arg};
         die "Argument '$arg' to 'pattern' is required";
     }
 
     my $pattern      = delete $arg {-pattern};
-    my $name         = delete $arg {-name};
     my $version      = delete $arg {-version} // 0;
     my $keep_pattern = delete $arg {-keep_pattern};
     my $config       = delete $arg {-config};
@@ -206,11 +225,7 @@ sub pattern {
     #
     # Sanity checks.
     #
-    my $key = name2key $name;
-    die "Illegal argument 'name' given to 'pattern'\n"
-         unless defined $key;
-
-    die "Illegal argument 'pattern' given to 'pattern'\n"
+    die "Illegal argument '-pattern' given to 'pattern'\n"
          unless check_pattern_type $pattern;
 
     #
@@ -250,9 +265,11 @@ sub pattern {
         }
     }
 
-    $CACHE {$key} = $hold;
+    my $old = $CACHE {$category} {$name};
 
-    return $key;
+    $CACHE {$category} {$name} = $hold;
+
+    !!$old;
 }
 
 #
@@ -275,28 +292,35 @@ sub parse_keep {
 # Retrieve a pattern
 #
 sub RE {
-    die "RE needs arguments" unless @_;
+    die "RE needs at least 2 arguments" unless @_ >= 2;
+
+    my $category = shift;
+    my $name     = shift;
+
+    die "Category is not valid" unless is_valid_name $category;
+    die "Name is not valid"     unless is_valid_name $name;
 
     #
-    # Collect the arguments.
+    # Load the category if it doesn't exist yet.
     #
-    my %arg  = collect_args default =>  "-Name",
-                            array   => ["-Name"],
-                            args    => \@_;
-
-    #
-    # Grab the global parameters.
-    #
-    my $Name = delete $arg {-Name}
-               or die "Argument '-Name' to 'RE' is required";
-    my $Keep = delete $arg {-Keep};
-
-    my $key  = name2key $Name or die "Illegal -Name argument to 'RE'";
+    unless (exists $CACHE {$category}) {
+        load_category $category;
+    }
 
     #
     # Die if it isn't there.
     #
-    my $hold = $CACHE {$key} or die "No pattern with that name";
+    my $hold = $CACHE {$category} {$name} or die "No pattern $category/$name";
+
+    #
+    # Collect the arguments.
+    #
+    my %arg  = collect_args args => \@_;
+
+    #
+    # Grab the global parameters.
+    #
+    my $Keep = delete $arg {-Keep};
 
     my $pattern;
     my $need_parse;    # If true, extract (?k: ) constructs.
