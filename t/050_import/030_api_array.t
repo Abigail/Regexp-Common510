@@ -16,10 +16,6 @@ ok !defined &pattern,  "&pattern is not set";
 ok  defined &RE,       "&RE is set";
 ok !defined &name2key, "&name2key is not set";
 
-$Regexp::Common510::RE {foo} = "bar";
-
-ok !defined $::RE {foo}, "%Regexp::Common510::RE was not exported";
-
 Test::NoWarnings::had_no_warnings () if $r;
 
 done_testing;

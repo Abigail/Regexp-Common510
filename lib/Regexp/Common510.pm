@@ -9,8 +9,6 @@ use Scalar::Util 'reftype';
 
 our $VERSION     = '2009112401';
 
-our %RE;
-
 my  $SEP       = "__";
 my  %CACHE;
 
@@ -74,7 +72,6 @@ sub import {
 
     foreach (@$api) {
         no strict 'refs';
-        when ("%RE")         {*{"${caller}::RE"}       = \%{"${pkg}::RE"}}
         when ("pattern")     {*{"${caller}::pattern"}  = \&{"${pkg}::pattern"}}
         when ("RE")          {*{"${caller}::RE"}       = \&{"${pkg}::RE"}}
         when ("name2key")    {*{"${caller}::name2key"} = \&{"${pkg}::name2key"}}
