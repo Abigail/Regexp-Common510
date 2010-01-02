@@ -14,6 +14,7 @@ our %RE;
 my  $SEP       = "__";
 my  %CACHE;
 
+sub load_category;
 
 sub collect_args {
     my %args = @_;
@@ -59,24 +60,15 @@ sub import {
     my $caller = caller;
     my $pkg    = shift;
 
-    my %args   = collect_args default => "-modules",
-                              array   => ["-api", "-modules"],
+    my %args   = collect_args default => "-categories",
+                              array   => ["-api", "-categories"],
                               args    => \@_;
 
-    my $api = exists $args {'-api'}
-            ? delete $args {'-api'}
-            : exists $args {'-modules'} && @{$args {'-modules'}} ? ['RE']
-                                                                 : ['pattern'];
+    my $api = delete $args {'-api'} // ["RE"];
 
-
-    if (exists $args {'-modules'}) {
-        my $modules = delete $args {'-modules'};
-        foreach my $module (@$modules) {
-            my $package = __PACKAGE__ . "::$module";
-            eval "require $package; 1" or do {
-                my $error = $@ // "Unknown error";
-                die "Importing $package failed: $error\n";
-            };
+    if (my $categories = delete $args {'-categories'}) {
+        foreach my $category (@$categories) {
+            load_category $category;
         }
     }
 
