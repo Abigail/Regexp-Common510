@@ -12,18 +12,19 @@ our $r = eval "require Test::NoWarnings; 1";
 
 use Regexp::Common510 -api => ['pattern'];
 
-my @tests = (["foo", ["foo"]],
-             ["foo__bar", ["foo", "bar"]]);
+my @tests = ([Test => 'test1'],
+             [Test => 'test2'],
+             [Foo  => 'bar'],
+             [Test => 'test2'],);
+
+my %seen;
 
 foreach my $test (@tests) {
-    my ($key, $name) = @$test;
-    my  $r1 = pattern -name    => $name,
-                      -pattern => "";
-    my  $r2 = pattern -name    => @$name,
-                      -pattern => "";
+    my ($category, $name) = @$test;
+    my  $s = $seen {$category} {$name} ++;
+    my  $r = pattern $category => $name, -pattern => "";
 
-    is $r1, $key, "pattern called succesfully";
-    is $r2, $key, "pattern called succesfully";
+    ok !($s xor $r), "pattern called succesfully";
 }
 
 
