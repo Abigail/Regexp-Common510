@@ -131,6 +131,7 @@ sub name2key {
         when (undef)   {$key = $name}
         when ("ARRAY") {$key =  join $SEP => grep {!reftype ($_)} @$name}
     }
+    $key =~ s/[^_\p{L}\p{N}]/_/g;
     return $key;
 }
 
@@ -194,7 +195,7 @@ sub pattern {
     my $name     = shift;
 
     die "Category is not valid" unless is_valid_name $category;
-    die "Name is not valid"     unless is_valid_name $name;
+  # die "Name is not valid"     unless is_valid_name $name;
 
     #
     # Collect the arguments
@@ -287,7 +288,7 @@ sub RE {
     my $name     = shift;
 
     die "Category is not valid" unless is_valid_name $category;
-    die "Name is not valid"     unless is_valid_name $name;
+  # die "Name is not valid"     unless is_valid_name $name;
 
     #
     # Load the category if it doesn't exist yet.
