@@ -75,9 +75,6 @@ sub import {
         when ("pattern")     {*{"${caller}::pattern"}  = \&{"${pkg}::pattern"}}
         when ("RE")          {*{"${caller}::RE"}       = \&{"${pkg}::RE"}}
         when ("name2key")    {*{"${caller}::name2key"} = \&{"${pkg}::name2key"}}
-        when ("unique_name") {
-            *{"${caller}::unique_name"} = \&{"${pkg}::unique_name"}
-        }
         default           {die "Unknown API point: $_\n"}
     }
 
@@ -99,15 +96,6 @@ sub load_category {
         my $error = $@ // "Unknown error";
         die "Importing $category failed: $error\n";
     };
-}
-
-#
-# Return a unique, valid, name to be used as capture.
-# All names will start with __RC__
-#
-sub unique_name () {
-    state $tag = "aaaaa";
-    "__RC__" . $tag ++;
 }
 
 #
