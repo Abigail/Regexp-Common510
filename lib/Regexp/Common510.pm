@@ -280,6 +280,13 @@ sub parse_keep {
 #
 # Retrieve a pattern
 #
+#  RE category, name [, arguments]
+#
+#   +  category:       Category the pattern comes from
+#   +  name:           Name of the pattern
+#   + -Keep:           Requesting the keep pattern
+#   + -xxxx:           (All lower case): args passed on to sub
+#
 sub RE {
     die "RE needs at least 2 arguments" unless @_ >= 2;
 
