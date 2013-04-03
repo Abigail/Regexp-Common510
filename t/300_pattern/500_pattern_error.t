@@ -33,11 +33,6 @@ throws_ok {pattern "123Test" => "foo"}
           qr /Category is not valid/,
           "Category is not valid";
 
-throws_ok {pattern "Test" => "::foo"}
-          qr /Name is not valid/,
-          "Name is not valid";
-
-
 Test::NoWarnings::had_no_warnings () if $r;
 
 done_testing;
