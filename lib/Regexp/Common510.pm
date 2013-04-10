@@ -79,7 +79,7 @@ sub import {
                               array   => ["-api", "-categories"],
                               args    => \@_;
 
-    my $api = delete $args {'-api'} // ["RE"];
+    my $api = delete $args {'-api'} // (@_ ? ["RE"] : ["pattern"]);
 
     if (my $categories = delete $args {'-categories'}) {
         foreach my $category (@$categories) {
