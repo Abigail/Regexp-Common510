@@ -7,26 +7,43 @@ no  warnings 'syntax';
 
 use Scalar::Util 'reftype';
 
-our $VERSION     = '2009112401';
+our $VERSION   = '2009112401';
 
 my  $SEP       = "__";
 my  %CACHE;
+my  $ZWSP      = "\x{200B}";   # Zero Width Space
 
 sub load_category;
 
 sub collect_args {
-    my %args = @_;
+    my %params = @_;
     my %out;
 
-    my $key   = $args {default};
-    my %array = $args {array} && ref $args {array} eq 'ARRAY'
-                               ? map {$_ => 1} @{$args {array}}
-                               : ();
+    my $key       = $params {default};
+    my $get_names = $params {get_names};
+    my $args      = $params {args};
+    my %array     = $params {array} && ref $params {array} eq 'ARRAY'
+                                  ? map {$_ => 1} @{$params {array}}
+                                  : ();
+
+    my ($category, $name);
+
+    if ($get_names) {
+        #
+        # First one is always the category.
+        #
+        $category = shift @$args;
+        my @names;
+        while (@$args && $$args [0] !~ /^-/) {
+            push @names => shift @$args;
+        }
+        $name     = join $ZWSP => @names;
+    }
 
     my $saw_arg = 0;
-    foreach my $param (@{$args {args}}) {
-        if ($param =~ /^-/) {
-            $key = $param;
+    foreach my $arg (@$args) {
+        if ($arg =~ /^-/) {
+            $key = $arg;
             $saw_arg = 0;
             #
             # Set a default.
@@ -38,20 +55,20 @@ sub collect_args {
             die "Cannot collect without a default key\n";
         }
         if ($array {$key}) {
-            push @{$out {$key}} => ref $param eq 'ARRAY' ? @$param : $param;
+            push @{$out {$key}} => ref $arg eq 'ARRAY' ? @$arg : $arg;
             next;
         }
         else {
             if ($saw_arg ++) {
-                die "Cannot have more than one parameter for '$param'";
+                die "Cannot have more than one parameter for '$arg'";
             }
-            $out {$key} = $param;
+            $out {$key} = $arg;
         }
     }
 
-    wantarray ? %out : \%out;
+    wantarray ? $get_names ? ($category, $name,  %out) :  %out
+              : $get_names ? [$category, $name, \%out] : \%out;
 }
-
 
 
 sub import {
@@ -179,15 +196,12 @@ sub check_pattern_type {
 sub pattern {
     die "pattern needs at least 2 arguments" unless @_ >= 2;
 
-    my $category = shift;
-    my $name     = shift;
-
-    die "Category is not valid" unless is_valid_name $category;
-
     #
     # Collect the arguments
     #
-    my %arg = collect_args args => \@_;
+    my ($category, $name, %arg) = collect_args get_names => 1, args => \@_;
+
+    die "Category is not valid" unless is_valid_name $category;
 
     foreach my $arg (qw [-pattern]) {
         next if exists $arg {$arg};
@@ -268,7 +282,7 @@ sub parse_keep {
 #
 # Retrieve a pattern
 #
-#  RE category, name [, arguments]
+#  RE category, name+ [, arguments]
 #
 #   +  category:       Category the pattern comes from
 #   +  name:           Name of the pattern
@@ -278,8 +292,10 @@ sub parse_keep {
 sub RE {
     die "RE needs at least 2 arguments" unless @_ >= 2;
 
-    my $category = shift;
-    my $name     = shift;
+    #
+    # Collect the arguments.
+    #
+    my ($category, $name, %arg) = collect_args get_names => 1, args => \@_;
 
     die "Category is not valid" unless is_valid_name $category;
 
@@ -294,11 +310,6 @@ sub RE {
     # Die if it isn't there.
     #
     my $hold = $CACHE {$category} {$name} or die "No pattern $category/$name";
-
-    #
-    # Collect the arguments.
-    #
-    my %arg  = collect_args args => \@_;
 
     #
     # Grab the global parameters.
