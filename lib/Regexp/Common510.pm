@@ -413,7 +413,7 @@ For a detailed description of the items above, see below.
 =head1 DEVELOPMENT
 
 The current sources of this module are found on github,
-L<< git://github.com/Abigail/Regexp--Common510.git >>.
+L<< git://github.com/Abigail/Regexp-Common510.git >>.
 
 =head1 AUTHOR
 
