@@ -189,6 +189,7 @@ sub check_pattern_type {
 #    + -keep_pattern: pattern or sub returning a pattern (optional)
 #    + -version:      minimal perl version
 #    + -config:       configuration
+#    + -extra_args:   extra arguments to be passed to pattern sub
 #
 # Returns the canonical name ($key).
 #
@@ -212,6 +213,7 @@ sub pattern {
     my $version      = delete $arg {-version} // 0;
     my $keep_pattern = delete $arg {-keep_pattern};
     my $config       = delete $arg {-config};
+    my $extra_args   = delete $arg {-extra_args};
 
     #
     # Sanity checks.
@@ -255,6 +257,8 @@ sub pattern {
             $$hold {config} = {%$config};
         }
     }
+
+    $$hold {extra_args} = $extra_args if defined $extra_args;
 
     my $old = $CACHE {$category} {$name};
 
@@ -336,7 +340,13 @@ sub RE {
     if (pattern_type $pattern eq "CODEREF") {
         my %config   = %{$$hold {config} || {}};
         $config {$_} = delete $arg {$_} foreach grep {/^-\p{Ll}/} keys %arg;
-        $pattern = $pattern -> (%config);
+        $pattern = $pattern -> (%config,
+                                 defined $Keep
+                                    ? (-Keep => $Keep)       : (),
+                                 exists $$hold {extra_args}
+                                    ? @{$$hold {extra_args}} : (),
+                                 -Name => [split $ZWSP => $name],
+        );
         if (  !exists $$hold {keep_pattern}
             && pattern_type $pattern eq "STRING") {
             $need_parse = 1;
