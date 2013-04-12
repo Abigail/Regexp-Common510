@@ -119,8 +119,7 @@ sub load_category {
 # Check if a string is a valid capture name.
 #
 sub is_valid_name {
-    my $_ = shift;
-    /^[_\p{L}][_\p{L}\p{Nd}]*$/;   # Digits or any numbers?
+    $_ [0] =~ /^[_\p{L}][_\p{L}\p{Nd}]*$/;   # Digits or any numbers?
 }
 
 #
