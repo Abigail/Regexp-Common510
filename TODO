@@ -2,3 +2,8 @@
     -  Passing of -Keep
     -  Passing of -Name
     -  Handling of extra_args
+
+- Write documentation
+
+- Write document explaining why Regexp::Common510 in stead of Regexp::Common
+ (part of README?)
