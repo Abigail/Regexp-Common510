@@ -21,7 +21,6 @@ sub collect_args {
     my %params = @_;
     my %out;
 
-    my $key       = $params {default};
     my $get_names = $params {get_names};
     my $args      = $params {args};
     my %array     = $params {array} && ref $params {array} eq 'ARRAY'
@@ -42,29 +41,17 @@ sub collect_args {
         $name     = join $ZWSP => @names;
     }
 
-    my $saw_arg = 0;
-    foreach my $arg (@$args) {
-        if ($arg =~ /^-/) {
-            $key = $arg;
-            $saw_arg = 0;
-            #
-            # Set a default.
-            #
-            $out {$key} = $array {$key} ? [] : 1;
-            next;
-        }
-        if (!defined $key) {
-            die "Cannot collect without a default key\n";
-        }
+    for (my $i = 0; $i < @$args - 1; $i += 2) {
+        my $key   = $$args [$i];
+        my $value = $$args [$i + 1];
+
+        die "Parameters should start with a hyphen\n" unless $key =~ /^-/;
+
         if ($array {$key}) {
-            push @{$out {$key}} => ref $arg eq 'ARRAY' ? @$arg : $arg;
-            next;
+            push @{$out {$key}} => ref $value eq 'ARRAY' ? @$value : $value;
         }
         else {
-            if ($saw_arg ++) {
-                die "Cannot have more than one parameter for '$arg'";
-            }
-            $out {$key} = $arg;
+            $out {$key} = $value;
         }
     }
 

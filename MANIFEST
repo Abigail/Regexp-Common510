@@ -7,13 +7,10 @@ t/Regexp/Common510/dummy.pm
 t/000_basic.t
 t/010_collect_args/010_scalars.t
 t/010_collect_args/020_array.t
-t/010_collect_args/030_default.t
-t/010_collect_args/040_no_arg.t
 t/010_collect_args/050_get_names.t
 t/050_import/010_default.t
 t/050_import/015_default.t
 t/050_import/020_empty_api.t
-t/050_import/021_empty_api.t
 t/050_import/030_api_array.t
 t/050_import/031_api_array.t
 t/050_import/032_api_array.t

@@ -10,7 +10,7 @@ use Test::More 0.88;
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => 'pattern', 'pattern', 'name2key';
+use Regexp::Common510 -api => ['pattern', 'pattern', 'name2key'];
 
 ok  defined &pattern,  "&pattern is set";
 ok !defined &RE,       "&RE is not set";
