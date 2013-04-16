@@ -7,6 +7,8 @@ no  warnings 'syntax';
 
 use Scalar::Util 'reftype';
 
+use warnings::register;
+
 our $VERSION   = '2009112401';
 
 my  $SEP       = "__";
@@ -339,12 +341,12 @@ sub RE {
     if (pattern_type $pattern eq "CODEREF") {
         my %config   = %{$$hold {config} || {}};
         $config {$_} = delete $arg {$_} foreach grep {/^-\p{Ll}/} keys %arg;
-        $pattern = $pattern -> (%config,
-                                 defined $Keep
-                                    ? (-Keep => $Keep)       : (),
-                                 exists $$hold {extra_args}
-                                    ? @{$$hold {extra_args}} : (),
-                                 -Name => [split $ZWSP => $name],
+        $pattern = $pattern -> (
+            %config,
+            defined $Keep              ? (-Keep => $Keep)       : (),
+            exists $$hold {extra_args} ? @{$$hold {extra_args}} : (),
+           -Name   =>  [split $ZWSP => $name],
+           -Warn   =>  warnings::enabled,
         );
         if (  !exists $$hold {keep_pattern}
             && pattern_type $pattern eq "STRING") {
