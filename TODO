@@ -1,7 +1,9 @@
 - Need tests for:
-    -  Passing of -Keep
+    -  Passing of -Keep (including "raw")
     -  Passing of -Name
     -  Handling of extra_args
+
+- Check arguments; RE should not accept paramaters not mentioned in -config.
 
 - Write documentation
 
