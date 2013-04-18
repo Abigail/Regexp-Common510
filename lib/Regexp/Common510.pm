@@ -263,6 +263,8 @@ sub parse_keep {
     my $pattern = $args {pattern};
     my $keep    = $args {keep};
 
+    return $pattern if $keep && $keep eq 'raw';
+
     $pattern    =~ s{\(\?k (?: <([^>]+)> )? :}
                     {$keep ? defined $1 ? "(?<$1>"
                                         : "("
