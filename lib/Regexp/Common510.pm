@@ -21,11 +21,12 @@ sub collect_args {
     my %params = @_;
     my %out;
 
-    my $get_names = $params {get_names};
-    my $args      = $params {args};
-    my %array     = $params {array} && ref $params {array} eq 'ARRAY'
-                                  ? map {$_ => 1} @{$params {array}}
-                                  : ();
+    my $get_names  = $params {get_names};
+    my $args       = $params {args};
+    my %array      = $params {array} && ref $params {array} eq 'ARRAY'
+                                   ? map {$_ => 1} @{$params {array}}
+                                   : ();
+    my $check_args = $params {check_args};
 
     my ($category, $name);
 
@@ -47,7 +48,7 @@ sub collect_args {
 
         unless ($key =~ /^-/) {
             require Carp;
-            croak ("Parameters should start with a hyphen");
+            Carp::croak ("Parameters should start with a hyphen");
         }
 
         if ($array {$key}) {
@@ -332,7 +333,19 @@ sub RE {
 
     if (pattern_type $pattern eq "CODEREF") {
         my %config   = %{$$hold {config} || {}};
-        $config {$_} = delete $arg {$_} foreach grep {/^-\p{Ll}/} keys %arg;
+
+        while (my ($key, $value) = each %arg) {
+            if (exists $$hold {config} {$key}) {
+                $config {$key} = $value;
+            }
+            else {
+                if (warnings::enabled) {
+                    require Carp;
+                    Carp::carp ("Unknown parameter '$key' ignored");
+                }
+            }
+        }
+
         $pattern = $pattern -> (
             %config,
             defined $Keep              ? (-Keep => $Keep)       : (),
@@ -340,6 +353,7 @@ sub RE {
            -Name   =>  [split $ZWSP => $name],
            -Warn   =>  warnings::enabled,
         );
+
         if (  !exists $$hold {keep_pattern}
             && pattern_type $pattern eq "STRING") {
             $need_parse = 1;
