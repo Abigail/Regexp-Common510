@@ -45,7 +45,10 @@ sub collect_args {
         my $key   = $$args [$i];
         my $value = $$args [$i + 1];
 
-        die "Parameters should start with a hyphen\n" unless $key =~ /^-/;
+        unless ($key =~ /^-/) {
+            require Carp;
+            croak ("Parameters should start with a hyphen");
+        }
 
         if ($array {$key}) {
             push @{$out {$key}} => ref $value eq 'ARRAY' ? @$value : $value;
