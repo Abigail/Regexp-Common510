@@ -1,6 +1,7 @@
 Makefile.PL
 MANIFEST
 Changes
+RATIONAL
 README
 lib/Regexp/Common510.pm
 t/Regexp/Common510/dummy.pm
