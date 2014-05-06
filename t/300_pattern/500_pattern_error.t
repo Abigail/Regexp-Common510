@@ -15,7 +15,7 @@ BEGIN {
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => ['pattern'];
+use Regexp::Common510;
 
 throws_ok {pattern}
           qr /pattern needs at least 2 arguments/,

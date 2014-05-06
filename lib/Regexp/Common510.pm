@@ -68,30 +68,53 @@ sub import {
     my $caller = caller;
     my $pkg    = shift;
 
-    my %args   = collect_args default => "-categories",
-                              array   => ["-api", "-categories"],
-                              args    => \@_;
+    #
+    # Anything that does not start with a ! or + is a category to be loaded.
+    #
+    my @categories = grep {!/^[!+]/} @_;
 
-    my $api = delete $args {'-api'} // (@_ ? ["RE"] : ["pattern"]);
+    my %export;
 
-    if (my $categories = delete $args {'-categories'}) {
-        foreach my $category (@$categories) {
-            load_category $category;
+    #
+    # If there are categories, by default, we'll export 'RE'.
+    #
+    if (@categories) {
+        $export {RE}      = 1;
+    }
+    #
+    # Otherwise, by default, we'll export 'pattern'.
+    #
+    else {
+        $export {pattern} = 1;
+    }
+
+    #
+    # Process !foo and +foo, allowing to override the default exports.
+    #
+    foreach my $arg (@_) {
+        if (substr ($arg, 0, 1) eq '!') {
+            delete $export {substr $arg => 1};
+        }
+        elsif (substr ($arg, 0, 1) eq '+') {
+            $export {substr $arg => 1} = 1;
         }
     }
 
-    foreach (@$api) {
-        no strict 'refs';
-        when ("pattern")     {*{"${caller}::pattern"}  = \&{"${pkg}::pattern"}}
-        when ("RE")          {*{"${caller}::RE"}       = \&{"${pkg}::RE"}}
-        when ("name2key")    {*{"${caller}::name2key"} = \&{"${pkg}::name2key"}}
-        default           {die "Unknown API point: $_\n"}
+    #
+    # Load the categories
+    #
+    foreach my $category (@categories) {
+        load_category $category;
     }
 
-    if (%args) {
-        my @keys = keys %args;
-        local $" = ", ";
-        die "Unknown import parameters: @keys\n";
+    #
+    # Export methods.
+    #
+    foreach my $sub (qw [RE pattern]) {
+        next unless $export {$sub};
+
+        no strict 'refs';
+        *{"${caller}::${sub}"} = \&{"${pkg}::${sub}"}
     }
 }
 
@@ -298,13 +321,6 @@ sub RE {
     die "Category is not valid" unless is_valid_name $category;
 
     #
-    # Load the category if it doesn't exist yet.
-    #
-    unless (exists $CACHE {$category}) {
-        load_category $category;
-    }
-
-    #
     # Die if it isn't there.
     #
     my $hold = $CACHE {$category} {$name} or die "No pattern $category/$name";
@@ -382,7 +398,8 @@ Regexp::Common510 - Abstract
 
 =head1 SYNOPSIS
 
- use Regexp::Common510 qw {number URI}, -api => 'pattern', 'RE';
+ use Regexp::Common510;
+ use Regexp::Common510 qw {Number URI};
 
 =head1 DESCRIPTION
 
@@ -398,10 +415,29 @@ of modules is used when C<< use >>ing C<< Regexp::Common510 >>), it's assumed
 the using package is package that wants to query for patterns. Then C<< RE >>
 is exported.
 
-In either case, the default can be overruled by using C<< -api LIST >> 
-in the usage list, where C<< LIST >> is a (possibly empty) list of things
-to import. C<< LIST >> is either a list of strings, or an anonymous array
-of strings. The following subroutines and variables can be imported:
+For each module C<< Name >> given as parameter, the module
+C<< Regexp::Common510::Name >> is loaded.
+
+If you don't want to import the default subroutines (C<< RE >> or
+C<< pattern >>), give the subroutine prepended with C<< ! >> as argument
+to C<< use Regex::Common510 >>. When you want to import either subroutine
+when it would not be exported, prepend C<< + >> to the subroutine name,
+and add it as an argument.
+
+  use Regexp::Common510;               # Imports 'pattern'
+
+  use Regexp::Common510 '!pattern';    # Do not import anything.
+
+  use Regexp::Common510 'Name';        # Load module Regexp::Common510::Name,
+                                       # and import 'RE'
+
+  use Regexp::Common510 '-RE', 'Name'; # Load module Regexp::Common510::Name,
+                                       # do not import anything.
+
+  use Regexp::Common510 'Name', '+pattern';
+                                       # Load module Regexp::Common510::Name,
+                                       # import both 'RE' and 'pattern'.
+
 
 =over 4
 

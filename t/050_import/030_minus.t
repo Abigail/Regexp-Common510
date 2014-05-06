@@ -6,15 +6,16 @@ use strict;
 use warnings;
 no  warnings 'syntax';
 
+use lib 't';
+
 use Test::More 0.88;
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => 'pattern', -api => 'name2key';
+use Regexp::Common510 'dummy', '!RE';
 
-ok  defined &pattern,  "&pattern is set";
-ok !defined &RE,       "&RE is not set";
-ok  defined &name2key, "&name2key is set";
+ok !defined &pattern,  "&pattern is set";
+ok !defined &RE,       "&RE is set";
 
 Test::NoWarnings::had_no_warnings () if $r;
 

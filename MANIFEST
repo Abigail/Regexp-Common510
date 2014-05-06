@@ -11,13 +11,10 @@ t/010_collect_args/020_array.t
 t/010_collect_args/050_get_names.t
 t/050_import/010_default.t
 t/050_import/015_default.t
-t/050_import/020_empty_api.t
-t/050_import/030_api_array.t
-t/050_import/031_api_array.t
-t/050_import/032_api_array.t
-t/050_import/041_multiple_api.t
-t/050_import/045_duplicate_api.t
-t/050_import/090_api_sanity.t
+t/050_import/020_add.t
+t/050_import/021_add.t
+t/050_import/030_minus.t
+t/050_import/031_minus.t
 t/100_is_valid_name/100_valid.t
 t/200_parse_keep/100_no_name.t
 t/200_parse_keep/200_with_name.t

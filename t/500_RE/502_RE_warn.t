@@ -15,7 +15,7 @@ BEGIN {
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => ['RE', 'pattern'];
+use Regexp::Common510 "+RE", "+pattern";
 use warnings 'Regexp::Common510';
 
 pattern  Foo     => 'test',

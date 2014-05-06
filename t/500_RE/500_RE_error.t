@@ -15,7 +15,7 @@ BEGIN {
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => ['RE'];
+use Regexp::Common510 "+RE";
 
 throws_ok {RE}
           qr /RE needs at least 2 arguments/,

@@ -10,7 +10,7 @@ use Test::More 0.88;
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => ['pattern'];
+use Regexp::Common510;
 
 my @tests = ([Test => 'test1'],
              [Test => 'test2'],

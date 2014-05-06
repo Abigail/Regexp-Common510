@@ -14,7 +14,6 @@ use Regexp::Common510;
 
 ok  defined &pattern,  "&pattern is set";
 ok !defined &RE,       "&RE is set";
-ok !defined &name2key, "&name2key is not set";
 
 Test::NoWarnings::had_no_warnings () if $r;
 

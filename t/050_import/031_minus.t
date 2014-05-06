@@ -10,11 +10,10 @@ use Test::More 0.88;
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 -api => [];
+use Regexp::Common510 '!pattern';
 
-ok !defined &pattern,  "&pattern is not set";
-ok !defined &RE,       "&RE is not set";
-ok !defined &name2key, "&name2key is not set";
+ok !defined &pattern,  "&pattern is set";
+ok !defined &RE,       "&RE is set";
 
 Test::NoWarnings::had_no_warnings () if $r;
 
