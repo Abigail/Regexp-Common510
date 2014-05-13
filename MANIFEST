@@ -13,6 +13,7 @@ t/050_import/010_default.t
 t/050_import/015_default.t
 t/050_import/020_add.t
 t/050_import/021_add.t
+t/050_import/022_add.t
 t/050_import/030_minus.t
 t/050_import/031_minus.t
 t/100_is_valid_name/100_valid.t
@@ -22,5 +23,6 @@ t/300_pattern/010_basic.t
 t/300_pattern/500_pattern_error.t
 t/500_RE/010_basic.t
 t/500_RE/500_RE_error.t
+t/700_unique_name.t
 t/950_pod.t
 t/960_pod_coverage.t

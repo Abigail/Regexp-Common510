@@ -110,7 +110,7 @@ sub import {
     #
     # Export methods.
     #
-    foreach my $sub (qw [RE pattern]) {
+    foreach my $sub (qw [RE pattern unique_name]) {
         next unless $export {$sub};
 
         no strict 'refs';
@@ -153,6 +153,22 @@ sub name2key {
     }
     $key =~ s/[^_\p{L}\p{N}]/_/g;
     return $key;
+}
+
+
+
+#
+# Return a unique name, depending on the class it's called from.
+#
+sub unique_name {
+    my  $pkg   = caller;
+    my ($name) = $pkg =~ /^Regexp::Common510::([A-Z][A-Za-z0-9_]*)/ or return;
+
+    state $cache;
+
+    $$cache {$name} //= "aaaa";
+
+    return "__RC_${name}_" . $$cache {$name} ++;
 }
 
 

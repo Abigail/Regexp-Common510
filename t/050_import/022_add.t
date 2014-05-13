@@ -12,11 +12,11 @@ use Test::More 0.88;
 
 our $r = eval "require Test::NoWarnings; 1";
 
-use Regexp::Common510 qw [dummy];
+use Regexp::Common510 '+pattern', '+unique_name';
 
-ok !defined &pattern,     "&pattern is not set";
-ok  defined &RE,          "&RE is set";
-ok !defined &unique_name, "&unique_name is not set";
+ok  defined &pattern,     "&pattern is set";
+ok !defined &RE,          "&RE is not set";
+ok  defined &unique_name, "&unique_name is set";
 
 Test::NoWarnings::had_no_warnings () if $r;
 
