@@ -21,6 +21,8 @@ my @tests = (
                    => '(?:(?:(?:foo)))',     '(?<DEF>(?<GHIJ>(?<DEF>foo)))'],
     ['foo (?k<XYZ123>:bar)'
                    => 'foo (?:bar)',         'foo (?<XYZ123>bar)'],
+    ['foo (?k<beeble!>:bar) (?k<blah>:baz)' 
+                   => 'foo (bar) (?:baz)',   'foo (?<beeble>bar) (?<blah>baz)'],
 );
 
 foreach my $test (@tests) {

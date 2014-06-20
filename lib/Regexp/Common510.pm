@@ -312,10 +312,11 @@ sub parse_keep {
 
     return $pattern if $keep && $keep eq 'raw';
 
-    $pattern    =~ s{\(\?k (?: <([^>]+)> )? :}
+    $pattern    =~ s{\(\?k (?: <([^>!]+)(!)?> )? :}
                     {$keep ? defined $1 ? "(?<$1>"
                                         : "("
-                           : "(?:"}xeg;
+                           : $2 ? "("
+                                : "(?:"}xeg;
 
     $pattern;
 }
