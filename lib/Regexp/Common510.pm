@@ -147,9 +147,12 @@ sub name2key {
     my $name = shift;
     my $key  = "";
     
-    given (reftype $name) {
-        when (undef)   {$key = $name}
-        when ("ARRAY") {$key =  join $SEP => grep {!reftype ($_)} @$name}
+    my $reftype = reftype $name;
+    if (!defined $reftype) {
+        $key = $name
+    }
+    elsif ($reftype eq 'ARRAY') {
+        $key =  join $SEP => grep {!reftype ($_)} @$name
     }
     $key =~ s/[^_\p{L}\p{N}]/_/g;
     return $key;
@@ -178,14 +181,15 @@ sub unique_name {
 sub pattern_type ($) {  
     my $pattern = shift;
     
-    given (reftype $pattern) {
-        when (undef)    {return "STRING"}
-        when ("SCALAR") {
-            return ref ($pattern) eq 'Regexp' ? "REGEXP" : "SCALAR"
-        }
-        default {
-            return "${_}REF";
-        }
+    my $reftype = reftype $pattern;
+    if (!defined $reftype) {
+        return "STRING";
+    }
+    elsif ($reftype eq "SCALAR") {
+        return ref ($pattern) eq 'Regexp' ? "REGEXP" : "SCALAR"
+    }
+    else {
+        return "${reftype}REF";
     }
 }
 
