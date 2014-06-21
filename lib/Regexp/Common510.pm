@@ -225,6 +225,7 @@ sub check_pattern_type {
 #    + -version:      minimal perl version
 #    + -config:       configuration
 #    + -extra_args:   extra arguments to be passed to pattern sub
+#    + -need_parse:   force parsing/non-parsing of results.
 #
 # Returns the canonical name ($key).
 #
@@ -249,6 +250,7 @@ sub pattern {
     my $keep_pattern = delete $arg {-keep_pattern};
     my $config       = delete $arg {-config};
     my $extra_args   = delete $arg {-extra_args};
+    my $need_parse   = delete $arg {-need_parse};
 
     #
     # Sanity checks.
@@ -266,7 +268,8 @@ sub pattern {
 
     my $hold;   # Hashref which will be stored in registry.
 
-    $$hold {pattern} = $pattern;
+    $$hold {pattern}    = $pattern;
+    $$hold {need_parse} = $need_parse if defined $need_parse;
 
 
     #
@@ -359,6 +362,7 @@ sub RE {
     #
     if ($Keep && exists $$hold {keep_pattern}) {
         $pattern = $$hold {keep_pattern};
+
     }
     else {
         $pattern    = $$hold {pattern};
@@ -397,7 +401,7 @@ sub RE {
         }
     }
 
-    if ($need_parse) {
+    if ($$hold {need_parse} // $need_parse) {
         my $parsed_pattern = parse_keep  pattern => $pattern,
                                          keep    => $Keep;
 
@@ -469,10 +473,6 @@ Register new patterns.
 =item C<< RE >>
 
 Query patterns.
-
-=item C<< %RE >>
-
-Old interface. (Possible. May never happen.)
 
 =back
 
