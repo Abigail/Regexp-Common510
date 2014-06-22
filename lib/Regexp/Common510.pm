@@ -478,6 +478,40 @@ Query patterns.
 
 For a detailed description of the items above, see below.
 
+=over 2
+
+=item C<< pattern category, name [, options...] >>
+
+The sub C<< pattern >> is used to register a new pattern, and is used
+by modules providing patters.
+
+The first two arguments of the method identify the pattern: the first is
+the category, which typically is the class name of the package defining
+the pattern, with C<< Regexp::Common510:: >> stripped from it. The second
+argument is the name, which has to be unique in category, but names can
+be shared between categories. 
+
+The other arguments are in the form of key/value pairs, most of them
+are optional. The following options can be used:
+
+=over 2
+
+=item C<< pattern >>
+
+=item C<< keep_pattern >>
+
+=item C<< version >>
+
+=item C<< config >>
+
+=item C<< extra_args >>
+
+=item C<< need_parse >>
+
+=back
+
+=back
+
 =head1 BUGS
 
 =head1 TODO
